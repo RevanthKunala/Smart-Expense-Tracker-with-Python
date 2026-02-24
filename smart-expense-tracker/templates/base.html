@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ExpenseIQ{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+  {% if current_user.is_authenticated %}
+
+  <div class="app-shell">
+
+    <!-- ── Sidebar ─────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">💸</span>
+        <span class="brand-name">ExpenseIQ</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="{{ url_for('main.dashboard') }}"
+          class="nav-item {% if request.endpoint == 'main.dashboard' %}active{% endif %}">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="{{ url_for('expenses.list_expenses') }}"
+          class="nav-item {% if request.endpoint in ['expenses.list_expenses', 'expenses.add_expense', 'expenses.edit_expense'] %}active{% endif %}">
+          <span class="nav-icon">📋</span> My Expenses
+        </a>
+        <a href="{{ url_for('expenses.add_expense') }}" class="nav-item">
+          <span class="nav-icon">➕</span> Add Expense
+        </a>
+        <a href="{{ url_for('budgets.manage_budgets') }}"
+          class="nav-item {% if request.blueprint == 'budgets' %}active{% endif %}">
+          <span class="nav-icon">🎯</span> Budget Goals
+        </a>
+        <a href="{{ url_for('recurring.manage_recurring') }}"
+          class="nav-item {% if request.blueprint == 'recurring' %}active{% endif %}">
+          <span class="nav-icon">🔄</span> Recurring
+        </a>
+        {% if current_user.is_admin() %}
+        <div class="nav-divider"></div>
+        <a href="{{ url_for('admin.dashboard') }}"
+          class="nav-item {% if request.blueprint == 'admin' %}active{% endif %}">
+          <span class="nav-icon">🛡️</span> Admin Panel
+        </a>
+        {% endif %}
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="avatar">{{ current_user.username[0].upper() }}</div>
+          <div>
+            <div class="username-text">{{ current_user.username }}</div>
+            {% if current_user.is_admin() %}
+            <div style="font-size:.68rem;color:#818cf8">Admin</div>
+            {% endif %}
+          </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout-btn" title="Logout">🚪</a>
+      </div>
+    </aside>
+
+    <!-- ── Main ────────────────────────────────────────────── -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar">☰</button>
+        <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:.75rem">
+          <!-- Export shortcuts on expenses page -->
+          {% if request.endpoint == 'expenses.list_expenses' %}
+          <a href="{{ url_for('expenses.export_csv') }}" class="btn btn-outline btn-sm" title="Export CSV">📥 CSV</a>
+          <a href="{{ url_for('expenses.export_pdf') }}" class="btn btn-outline btn-sm" title="Export PDF">📄 PDF</a>
+          {% endif %}
+          <!-- Dark mode toggle -->
+          <button class="dark-toggle" id="darkToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+        </div>
+      </header>
+
+      <div class="content-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="alerts">
+          {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+            <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Close">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+
+  </div><!-- /.app-shell -->
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-icon">🗑️</div>
+      <h3>Confirm Delete</h3>
+      <p>This action cannot be undone. The record will be permanently removed.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="cancelDelete">Cancel</button>
+        <form id="deleteForm" method="POST" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-danger" id="confirmDelete">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+
+  <div class="auth-wrapper">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="alerts auth-alerts">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% block auth_content %}{% endblock %}
+  </div>
+
+  {% endif %}
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+
+</html>

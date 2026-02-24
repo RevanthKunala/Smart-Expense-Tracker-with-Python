@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}My Expenses – ExpenseIQ{% endblock %}
+{% block page_title %}My Expenses{% endblock %}
+
+{% block content %}
+
+<!-- ── Advanced Filter Bar ─────────────────────────────────── -->
+<div class="filter-bar">
+  <form method="GET" action="{{ url_for('expenses.list_expenses') }}" id="filterForm">
+    <div class="filter-row">
+      <div class="form-group">
+        <label for="search">🔍 Search</label>
+        <input type="text" id="search" name="search" class="form-control" placeholder="Description…"
+          value="{{ filters.search or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="date_from">From Date</label>
+        <input type="date" id="date_from" name="date_from" class="form-control" value="{{ filters.date_from or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="date_to">To Date</label>
+        <input type="date" id="date_to" name="date_to" class="form-control" value="{{ filters.date_to or '' }}">
+      </div>
+      <div class="form-group">
+        <label for="category_id">Category</label>
+        <select id="category_id" name="category_id" class="form-control">
+          <option value="">All</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if filters.category_id==cat.id %}selected{% endif %}>
+            {{ cat.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="filter-row" style="margin-top:.5rem">
+      <div class="form-group">
+        <label for="amount_min">Min Amount (₹)</label>
+        <div class="input-prefix">
+          <span class="prefix">₹</span>
+          <input type="number" id="amount_min" name="amount_min" class="form-control" placeholder="0" min="0"
+            step="0.01" value="{{ filters.amount_min or '' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="amount_max">Max Amount (₹)</label>
+        <div class="input-prefix">
+          <span class="prefix">₹</span>
+          <input type="number" id="amount_max" name="amount_max" class="form-control" placeholder="Any" min="0"
+            step="0.01" value="{{ filters.amount_max or '' }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="sort">Sort By</label>
+        <select id="sort" name="sort" class="form-control">
+          <option value="date_desc" {% if filters.sort=='date_desc' %}selected{% endif %}>Date (Newest)</option>
+          <option value="date_asc" {% if filters.sort=='date_asc' %}selected{% endif %}>Date (Oldest)</option>
+          <option value="amount_desc" {% if filters.sort=='amount_desc' %}selected{% endif %}>Amount (Highest)</option>
+          <option value="amount_asc" {% if filters.sort=='amount_asc' %}selected{% endif %}>Amount (Lowest)</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+        <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-outline btn-sm">Reset</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- ── Expenses Table ──────────────────────────────────────── -->
+<div class="card">
+  <div class="card-header">
+    <h3>📋 Expense Records
+      {% if expenses %}
+      <span style="font-weight:400;color:var(--muted);font-size:.8rem;margin-left:.4rem">
+        ({{ expenses|length }} result{% if expenses|length != 1 %}s{% endif %})
+      </span>
+      {% endif %}
+    </h3>
+    <a href="{{ url_for('expenses.add_expense') }}" class="btn btn-primary btn-sm">+ Add</a>
+  </div>
+
+  {% if expenses %}
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th class="text-right">Amount</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exp in expenses %}
+          {% set cat_slug = exp.category_name.lower().replace(' ', '') %}
+          <tr>
+            <td class="date-cell">{{ exp.date.strftime('%d %b %Y') if exp.date is not string else exp.date }}</td>
+            <td>{{ exp.description }}</td>
+            <td><span class="badge badge-{{ cat_slug }}">{{ exp.category_name }}</span></td>
+            <td class="text-right amount-cell">{{ exp.amount | inr }}</td>
+            <td class="text-center" style="white-space:nowrap">
+              <a href="{{ url_for('expenses.edit_expense', expense_id=exp.id) }}" class="btn btn-icon btn-sm btn-edit"
+                title="Edit">✏️</a>
+              <button class="btn btn-icon btn-sm btn-delete"
+                data-delete-url="{{ url_for('expenses.delete_expense', expense_id=exp.id) }}"
+                title="Delete">🗑️</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="font-weight:600">Total (filtered)</td>
+            <td class="text-right amount-cell">
+              {% set total = expenses | sum(attribute='amount') %}
+              {{ total | inr }}
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">💸</div>
+    <h3>No expenses found</h3>
+    <p>
+      {% if filters.date_from or filters.date_to or filters.category_id or filters.search or filters.amount_min or
+      filters.amount_max %}
+      No expenses match your filters. Try changing your search criteria.
+      {% else %}
+      You haven't recorded any expenses yet!
+      {% endif %}
+    </p>
+    <a href="{{ url_for('expenses.add_expense') }}" class="btn btn-primary">+ Add Your First Expense</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Budget Goals – ExpenseIQ{% endblock %}
+{% block page_title %}Budget Goals{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h2>💰 Monthly Budgets — {{ month }}</h2>
+</div>
+
+<!-- Set Budget Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Set a Budget</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('budgets.manage_budgets') }}" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    {{ form.category_id(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>Budget Amount (₹)</label>
+                    <div class="input-prefix">
+                        <span class="prefix">₹</span>
+                        {{ form.amount(class="form-control", placeholder="e.g. 5000") }}
+                    </div>
+                    {% for e in form.amount.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Budget</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Budget Status -->
+{% if budgets %}
+<div class="card">
+    <div class="card-header">
+        <h3>📊 Budget Status This Month</h3>
+    </div>
+    <div class="card-body">
+        {% for b in budgets %}
+        <div class="budget-item {% if b.overspent %}overspent{% elif b.over_80 %}warning{% endif %}">
+            <div class="budget-header">
+                <span class="budget-label">
+                    {% if b.overspent %}🔴{% elif b.over_80 %}🟡{% else %}🟢{% endif %}
+                    {{ b.label }}
+                </span>
+                <span class="budget-amounts">
+                    <strong>{{ b.spent | inr }}</strong> / {{ b.budget | inr }}
+                    <span class="budget-pct{% if b.overspent %} red{% elif b.over_80 %} amber{% endif %}">
+                        {{ b.pct }}%
+                    </span>
+                </span>
+            </div>
+            <div class="budget-bar-track">
+                <div class="budget-bar-fill
+          {% if b.overspent %}over
+          {% elif b.over_80 %}warn
+          {% else %}ok{% endif %}" style="width: {{ [b.pct, 100]|min }}%">
+                </div>
+            </div>
+            <div style="text-align:right;margin-top:.3rem">
+                <form method="POST" action="{{ url_for('budgets.delete_budget', budget_id=b.id) }}"
+                    style="display:inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline" style="font-size:.72rem">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🎯</div>
+    <h3>No budgets set</h3>
+    <p>Set a budget above to start tracking your spending limits.</p>
+</div>
+{% endif %}
+{% endblock %}

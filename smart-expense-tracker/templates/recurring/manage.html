@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Recurring Expenses – ExpenseIQ{% endblock %}
+{% block page_title %}Recurring Expenses{% endblock %}
+
+{% block content %}
+<div class="section-header">
+    <h2>🔄 Recurring Expenses</h2>
+</div>
+
+<!-- Add Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Add Recurring Expense</h3>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('recurring.manage_recurring') }}" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Description</label>
+                    {{ form.description(class="form-control", placeholder="e.g. Netflix, Rent, EMI") }}
+                    {% for e in form.description.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <div class="input-prefix">
+                        <span class="prefix">₹</span>
+                        {{ form.amount(class="form-control", placeholder="0.00") }}
+                    </div>
+                    {% for e in form.amount.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    {{ form.category_id(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>Day of Month (1–28)</label>
+                    {{ form.day_of_month(class="form-control", placeholder="1") }}
+                    {% for e in form.day_of_month.errors %}<span class="form-error">{{ e }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add Recurring</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- List -->
+{% if entries %}
+<div class="card">
+    <div class="card-header">
+        <h3>Active & Inactive Subscriptions</h3>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th class="text-right">Amount</th>
+                        <th class="text-center">Day</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in entries %}
+                    {% set cat_slug = r.category_name.lower().replace(' ', '') %}
+                    <tr class="{{ 'row-inactive' if not r.active }}">
+                        <td>{{ r.description }}</td>
+                        <td><span class="badge badge-{{ cat_slug }}">{{ r.category_name }}</span></td>
+                        <td class="text-right amount-cell">{{ r.amount | inr }}</td>
+                        <td class="text-center">{{ r.day_of_month }}</td>
+                        <td class="text-center">
+                            <span class="badge {% if r.active %}badge-active{% else %}badge-inactive{% endif %}">
+                                {% if r.active %}Active{% else %}Paused{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-center" style="white-space:nowrap">
+                            <form method="POST" action="{{ url_for('recurring.toggle_recurring', rec_id=r.id) }}"
+                                style="display:inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-icon btn-sm"
+                                    title="{{ 'Pause' if r.active else 'Activate' }}">
+                                    {{ '⏸️' if r.active else '▶️' }}
+                                </button>
+                            </form>
+                            <button class="btn btn-icon btn-sm btn-delete"
+                                data-delete-url="{{ url_for('recurring.delete_recurring', rec_id=r.id) }}"
+                                title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🔄</div>
+    <h3>No recurring expenses yet</h3>
+    <p>Add subscriptions like Netflix, rent, or EMI — they'll auto-insert each month.</p>
+</div>
+{% endif %}
+{% endblock %}

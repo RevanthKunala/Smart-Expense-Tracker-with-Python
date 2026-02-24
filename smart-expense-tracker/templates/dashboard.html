@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – ExpenseIQ{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.min.css">
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Stat Cards ──────────────────────────────────────────── -->
+<div class="stats-grid" id="statsGrid">
+  <div class="stat-card shimmer">
+    <div class="stat-icon green">₹</div>
+    <div class="stat-info">
+      <span class="stat-label">This Month</span>
+      <span class="stat-value" id="monthTotal">—</span>
+    </div>
+  </div>
+  <div class="stat-card shimmer">
+    <div class="stat-icon blue">📆</div>
+    <div class="stat-info">
+      <span class="stat-label">Avg Daily Spend</span>
+      <span class="stat-value" id="avgDaily">—</span>
+    </div>
+  </div>
+  <div class="stat-card shimmer">
+    <div class="stat-icon purple">🏆</div>
+    <div class="stat-info">
+      <span class="stat-label">Top Category</span>
+      <span class="stat-value stat-value-sm" id="topCategory">—</span>
+    </div>
+  </div>
+  <div class="stat-card shimmer">
+    <div class="stat-icon orange">📈</div>
+    <div class="stat-info">
+      <span class="stat-label">vs Last Month</span>
+      <span class="stat-value" id="vsLastMonth">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Smart Analytics Cards ───────────────────────────────── -->
+<div class="analytics-row" id="analyticsRow">
+  <div class="analytics-card">
+    <div class="analytics-title">🔮 Predicted Next Month</div>
+    <div class="analytics-value" id="predicted">—</div>
+    <div class="analytics-sub">Based on 3-month average</div>
+  </div>
+  <div class="analytics-card">
+    <div class="analytics-title">🏅 Top 3 Categories</div>
+    <div id="top3List" class="top3-list">—</div>
+  </div>
+  <div class="analytics-card">
+    <div class="analytics-title">🎯 Budget Status</div>
+    <div id="budgetStatus">
+      <div style="color:var(--muted);font-size:.85rem">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Charts ──────────────────────────────────────────────── -->
+<div class="charts-grid">
+  <div class="card chart-card">
+    <div class="card-header">
+      <h3>📂 Category Breakdown</h3>
+    </div>
+    <div class="card-body"><canvas id="pieChart" height="260"></canvas></div>
+  </div>
+  <div class="card chart-card">
+    <div class="card-header">
+      <h3>📈 Monthly Trend</h3>
+    </div>
+    <div class="card-body"><canvas id="lineChart" height="260"></canvas></div>
+  </div>
+</div>
+
+<!-- ── Recent Transactions ────────────────────────────────── -->
+<div class="card mt-4">
+  <div class="card-header">
+    <h3>🕐 Recent Transactions</h3>
+    <a href="{{ url_for('expenses.list_expenses') }}" class="btn btn-outline btn-sm">View All</a>
+  </div>
+  <div class="card-body p-0" id="recentList">
+    <div class="loading-placeholder">Loading…</div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

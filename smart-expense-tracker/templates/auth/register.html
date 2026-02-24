@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account – ExpenseIQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(-45deg, #0a1628, #0d1f17, #0f1923, #0c1a14, #111827, #071a10);
+      background-size: 400% 400%;
+      animation: gradientShift 14s ease infinite;
+      overflow: hidden;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(20, 184, 166, .07);
+      animation: float linear infinite;
+    }
+
+    .particle:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      left: 10%;
+      animation-duration: 18s;
+      animation-delay: 0s;
+      top: 100%;
+    }
+
+    .particle:nth-child(2) {
+      width: 40px;
+      height: 40px;
+      left: 25%;
+      animation-duration: 22s;
+      animation-delay: 3s;
+      top: 100%;
+    }
+
+    .particle:nth-child(3) {
+      width: 110px;
+      height: 110px;
+      left: 45%;
+      animation-duration: 15s;
+      animation-delay: 1s;
+      top: 100%;
+      background: rgba(245, 158, 11, .05);
+    }
+
+    .particle:nth-child(4) {
+      width: 60px;
+      height: 60px;
+      left: 60%;
+      animation-duration: 24s;
+      animation-delay: 5s;
+      top: 100%;
+    }
+
+    .particle:nth-child(5) {
+      width: 30px;
+      height: 30px;
+      left: 80%;
+      animation-duration: 19s;
+      animation-delay: 2s;
+      top: 100%;
+    }
+
+    .particle:nth-child(6) {
+      width: 70px;
+      height: 70px;
+      left: 88%;
+      animation-duration: 21s;
+      animation-delay: 7s;
+      top: 100%;
+      background: rgba(16, 185, 129, .06);
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: .5;
+      }
+
+      100% {
+        transform: translateY(-110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 380px;
+      height: 380px;
+      background: rgba(13, 148, 136, .2);
+      top: -80px;
+      left: -80px;
+      animation: orbPulse 9s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 300px;
+      height: 300px;
+      background: rgba(245, 158, 11, .1);
+      bottom: -40px;
+      right: -60px;
+      animation: orbPulse 11s ease-in-out infinite reverse;
+    }
+
+    @keyframes orbPulse {
+
+      0%,
+      100% {
+        opacity: .7;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.12);
+      }
+    }
+
+    /* ── Card — slightly wider for register ──────────── */
+    .login-card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 500px;
+      margin: 1rem;
+      background: rgba(15, 25, 20, 0.78);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(20, 184, 166, .18);
+      border-radius: 1.5rem;
+      padding: 2.4rem 2.5rem;
+      box-shadow:
+        0 8px 40px rgba(0, 0, 0, .5),
+        0 0 0 1px rgba(20, 184, 166, .06) inset,
+        0 0 60px rgba(13, 148, 136, .07);
+      animation: slideUp .6s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(36px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 1.6rem;
+      animation: slideUp .6s .1s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #0d9488, #14b8a6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: .75rem;
+      box-shadow: 0 6px 22px rgba(13, 148, 136, .5);
+    }
+
+    .brand h1 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.02em;
+    }
+
+    .brand p {
+      font-size: .82rem;
+      color: rgba(255, 255, 255, .42);
+      margin-top: .2rem;
+    }
+
+    .alert {
+      padding: .65rem .9rem;
+      border-radius: .6rem;
+      font-size: .82rem;
+      margin-bottom: 1.1rem;
+      font-weight: 500;
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, .15);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, .3);
+    }
+
+    .alert-success {
+      background: rgba(20, 184, 166, .15);
+      color: #5eead4;
+      border: 1px solid rgba(20, 184, 166, .3);
+    }
+
+    .alert-info {
+      background: rgba(245, 158, 11, .12);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, .25);
+    }
+
+    .form-wrap {
+      animation: slideUp .6s .15s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    .field {
+      margin-bottom: .95rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: .72rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .45);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: .35rem;
+    }
+
+    .field input {
+      width: 100%;
+      padding: .68rem 1rem;
+      background: rgba(255, 255, 255, .05);
+      border: 1.5px solid rgba(255, 255, 255, .08);
+      border-radius: .65rem;
+      color: #e2e8f0;
+      font-size: .875rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .field input::placeholder {
+      color: rgba(255, 255, 255, .2);
+    }
+
+    .field input:focus {
+      border-color: rgba(13, 148, 136, .7);
+      background: rgba(13, 148, 136, .06);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, .15);
+    }
+
+    .field input.is-invalid {
+      border-color: rgba(239, 68, 68, .6);
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .85rem;
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 2.8rem;
+    }
+
+    .pw-eye {
+      position: absolute;
+      right: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, .32);
+      transition: color .2s;
+      padding: .2rem;
+      line-height: 1;
+    }
+
+    .pw-eye:hover {
+      color: rgba(255, 255, 255, .7);
+    }
+
+    .form-error {
+      display: block;
+      color: #f87171;
+      font-size: .73rem;
+      margin-top: .3rem;
+    }
+
+    .btn-signup {
+      width: 100%;
+      padding: .78rem;
+      background: linear-gradient(135deg, #0d9488, #0f766e);
+      border: none;
+      border-radius: .7rem;
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .03em;
+      box-shadow: 0 4px 20px rgba(13, 148, 136, .42);
+      transition: transform .15s ease, box-shadow .15s ease;
+      margin-top: .5rem;
+    }
+
+    .btn-signup:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(13, 148, 136, .6);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 1.1rem;
+      font-size: .82rem;
+      color: rgba(255, 255, 255, .35);
+    }
+
+    .login-link a {
+      color: #2dd4bf;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      color: #5eead4;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, .07);
+      margin: 1.1rem 0;
+    }
+
+    .trust {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      font-size: .68rem;
+      color: rgba(255, 255, 255, .27);
+    }
+
+    @media (max-width: 520px) {
+      .login-card {
+        padding: 2rem 1.5rem;
+      }
+
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="login-card">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="brand">
+      <div class="brand-logo">🚀</div>
+      <h1>Create your account</h1>
+      <p>Start tracking expenses in under a minute</p>
+    </div>
+
+    <div class="form-wrap">
+      <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="field">
+          <label for="username">Username</label>
+          {{ form.username(id="username",
+          class="form-control" ~ (" is-invalid" if form.username.errors else ""),
+          placeholder="johndoe",
+          autocomplete="username") }}
+          {% for err in form.username.errors %}<span class="form-error">{{ err }}</span>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label for="email">Email address</label>
+          {{ form.email(id="email",
+          class="form-control" ~ (" is-invalid" if form.email.errors else ""),
+          placeholder="you@example.com",
+          autocomplete="email") }}
+          {% for err in form.email.errors %}<span class="form-error">{{ err }}</span>{% endfor %}
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="pw-wrap">
+              {{ form.password(id="password",
+              class="form-control" ~ (" is-invalid" if form.password.errors else ""),
+              placeholder="Min 8 chars",
+              autocomplete="new-password") }}
+              <button type="button" class="pw-eye" data-target="password" aria-label="Toggle">👁️</button>
+            </div>
+            {% for err in form.password.errors %}<span class="form-error">{{ err }}</span>{% endfor %}
+          </div>
+
+          <div class="field">
+            <label for="confirm">Confirm Password</label>
+            <div class="pw-wrap">
+              {{ form.confirm(id="confirm",
+              class="form-control" ~ (" is-invalid" if form.confirm.errors else ""),
+              placeholder="Repeat password",
+              autocomplete="new-password") }}
+              <button type="button" class="pw-eye" data-target="confirm" aria-label="Toggle">👁️</button>
+            </div>
+            {% for err in form.confirm.errors %}<span class="form-error">{{ err }}</span>{% endfor %}
+          </div>
+        </div>
+
+        <button type="submit" class="btn-signup">Create Account →</button>
+      </form>
+    </div>
+
+    <p class="login-link">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in →</a></p>
+
+    <div class="divider"></div>
+    <div class="trust">
+      <span class="trust-item">🔒 bcrypt hashed</span>
+      <span class="trust-item">🛡️ CSRF protected</span>
+      <span class="trust-item">⚡ Free forever</span>
+    </div>
+
+  </div>
+
+  <script>
+    document.querySelectorAll('.pw-eye').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const inp = document.getElementById(this.dataset.target);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        this.textContent = inp.type === 'text' ? '🙈' : '👁️';
+      });
+    });
+  </script>
+</body>
+
+</html>

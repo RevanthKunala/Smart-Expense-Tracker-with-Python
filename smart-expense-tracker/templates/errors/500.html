@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Server Error – ExpenseIQ{% endblock %}
+{% block page_title %}500 – Server Error{% endblock %}
+
+{% block content %}
+<div class="empty-state" style="padding:5rem 1.5rem">
+  <div class="error-code">500</div>
+  <div class="empty-icon" style="opacity:1">💥</div>
+  <h3>Something Went Wrong</h3>
+  <p>An unexpected error occurred on our server. Please try again in a moment.</p>
+  <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">← Go to Dashboard</a>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel – ExpenseIQ{% endblock %}
+{% block page_title %}Admin Panel{% endblock %}
+
+{% block content %}
+<!-- Overview stats -->
+<div class="stats-grid" style="grid-template-columns: repeat(3,1fr)">
+    <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-info">
+            <span class="stat-label">Total Users</span>
+            <span class="stat-value">{{ total_users }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">💰</div>
+        <div class="stat-info">
+            <span class="stat-label">Platform Spend</span>
+            <span class="stat-value">{{ total_expenses | inr }}</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">📈</div>
+        <div class="stat-info">
+            <span class="stat-label">Avg per User</span>
+            <span class="stat-value">
+                {% if total_users > 0 %}{{ (total_expenses / total_users) | inr }}{% else %}₹0{% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Users table -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>👤 All Users</h3>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th class="text-center">Role</th>
+                        <th class="text-right">Total Spend</th>
+                        <th>Joined</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td class="date-cell">{{ u.id }}</td>
+                        <td><strong>{{ u.username }}</strong>{% if u.id == current_user.id %} <span
+                                class="badge badge-health">You</span>{% endif %}</td>
+                        <td class="date-cell">{{ u.email }}</td>
+                        <td class="text-center">
+                            <span class="badge {% if u.role == 'admin' %}badge-food{% else %}badge-bills{% endif %}">
+                                {{ u.role }}
+                            </span>
+                        </td>
+                        <td class="text-right amount-cell">{{ u.total_spent | inr }}</td>
+                        <td class="date-cell">{{ u.created_at.strftime('%d %b %Y') if u.created_at is not string else
+                            u.created_at }}</td>
+                        <td class="text-center" style="white-space:nowrap">
+                            {% if u.id != current_user.id %}
+                            {% if u.role == 'user' %}
+                            <form method="POST" action="{{ url_for('admin.promote_user', user_id=u.id) }}"
+                                style="display:inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline" title="Promote to admin">⬆️
+                                    Admin</button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('admin.demote_user', user_id=u.id) }}"
+                                style="display:inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline" title="Demote to user">⬇️
+                                    User</button>
+                            </form>
+                            {% endif %}
+                            {% else %}
+                            <span class="date-cell">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
